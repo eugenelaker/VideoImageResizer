@@ -6,6 +6,10 @@
 std::atomic<FileLogger*> FileLogger::m_instance;
 std::mutex FileLogger::m_logger_mutex;
 
+//---------------------------------------------------------------------
+//  get_logger: return only one instance of thread pool
+//	input:       log name 
+//---------------------------------------------------------------------
 FileLogger* FileLogger::get_logger(std::string logname)
 {
 	FileLogger* sin = m_instance.load(std::memory_order_acquire);

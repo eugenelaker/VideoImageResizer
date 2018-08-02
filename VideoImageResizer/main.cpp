@@ -49,7 +49,8 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	std::shared_ptr<FileLogger> logger = std::make_shared<FileLogger>("VideoImageResizerLog");
+	std::unique_ptr<FileLogger> logger;
+	logger.reset( FileLogger::get_logger("VideoImageResizer"));
 	std::unique_ptr<VideoImagesHandler> handler = std::make_unique<VideoImagesHandler>();
 	if (handler) {
 		handler->Init(folder_name, worker_cnt);

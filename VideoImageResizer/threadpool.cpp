@@ -1,33 +1,6 @@
 #include "threadpool.h"
 #include <algorithm>
 
-std::atomic<ThreadPool*> ThreadPool::m_instance;
-std::mutex ThreadPool::m_mutex;
-
-//---------------------------------------------------------------------
-//  getInstance: return only one instance of thread pool
-//	input:       count of desired workers 
-//---------------------------------------------------------------------
-ThreadPool* ThreadPool::getInstance(int thread_cnt)
-{
-	ThreadPool* sin = m_instance.load(std::memory_order_acquire);
-	if (!sin) {
-		std::lock_guard<std::mutex> myLock(m_mutex);
-		sin = m_instance.load(std::memory_order_relaxed);
-		if (!sin) {
-			sin = new ThreadPool(thread_cnt);
-			m_instance.store(sin, std::memory_order_release);
-		}
-	}
-
-	return sin;
-}
-
-ThreadPool::ThreadPool()
-	: ThreadPool(std::thread::hardware_concurrency())
-{
-}
-
 //---------------------------------------------------------------------
 //  ThreadPool: constructor
 //	 

@@ -12,8 +12,9 @@
 class ThreadPool
 {
 public:
-	static ThreadPool* getInstance(int thread_cnt = std::thread::hardware_concurrency());
-	
+	ThreadPool(const std::size_t threads_cnt);
+	~ThreadPool();
+
 	template < typename Function_t, typename... Args >
 	auto AddTask(Function_t&& func, Args&&... args)
 		->std::future< typename std::result_of< Function_t(Args...) >::type >
@@ -38,18 +39,14 @@ public:
 	std::size_t Thread_Count() const { return m_threads.size(); }
 
 private:
-	ThreadPool();
-	ThreadPool(const std::size_t threads_cnt);
-	~ThreadPool();
+	ThreadPool() = delete;
 
 	ThreadPool(const ThreadPool & source) = delete;
 	ThreadPool & operator=(const ThreadPool & source) = delete;
 private:
-	static std::atomic<ThreadPool*>		m_instance;
 	std::vector<std::thread >           m_threads;
 	std::queue<std::function<void()>>   m_task_queue;
 	std::recursive_mutex                m_queue_mutex;
-	static std::mutex					m_mutex;
 	std::condition_variable_any         m_notifier;
 	bool                                m_stop;
 };

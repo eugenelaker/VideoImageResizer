@@ -26,8 +26,11 @@ VideoImagesHandler::~VideoImagesHandler()
 
 void VideoImagesHandler::Init(std::string folder, int workers_cnt)
 {
+	LOG_DBG("VideoImagesHandler::Init");
 	m_folder = folder;
-	ThreadPool::getInstance(workers_cnt);
+	
+	_tread_pool_ptr = std::make_unique<ThreadPool>(workers_cnt);
+	
 }
 
 void VideoImagesHandler::SetLogger(std::shared_ptr<FileLogger> logger)
@@ -38,6 +41,7 @@ void VideoImagesHandler::SetLogger(std::shared_ptr<FileLogger> logger)
 
 std::vector<std::string> VideoImagesHandler::GetVideoFiles(const std::vector<std::string>& ext)
 {
+	LOG_DBG("VideoImagesHandler::GetVideoFiles");
 	std::vector<std::string> files;
 	for (auto& dirEntry : fs::directory_iterator(m_folder))
 	{
@@ -54,10 +58,11 @@ std::vector<std::string> VideoImagesHandler::GetVideoFiles(const std::vector<std
 
 std::int64_t VideoImagesHandler::Proceed(const std::string& file_path)
 {
+	LOG_DBG("VideoImagesHandler::Proceed");
 	std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
 	fs::path path(file_path);
 	cv::VideoCapture cap = cv::VideoCapture(path.string());
-	LOG_DBG("Openning video capture;");
+	LOG_DBG("Openning video capture");
 	if (!cap.isOpened()) {
 		std::stringstream msg;
 		msg << "Video Capture not opened for file: " << file_path << "\n";
@@ -106,15 +111,14 @@ state_codes VideoImagesHandler::Start()
 	if (m_folder.empty())
 		return STATE_FOLDER_IS_EMPTY;
 
-	int64_t total_time = 0;;
-	ThreadPool* tpool = ThreadPool::getInstance();
+	int64_t total_time = 0;
 	std::vector<std::string> files = GetVideoFiles(extensions);
 
-	if (!files.empty() && tpool) {
+	if (!files.empty() && _tread_pool_ptr) {
 		int64_t result;
 		std::vector<std::future<int64_t>> tasks_vec;
 		for (const std::string& f : files) {		
-			tasks_vec.push_back(tpool->AddTask([&](std::string f) -> int64_t {
+			tasks_vec.push_back(_tread_pool_ptr->AddTask([&](std::string f) -> int64_t {
 				return Proceed(f);
 			}, f));
 		}

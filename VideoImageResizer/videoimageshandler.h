@@ -7,6 +7,7 @@
 #include "defines.h"
 
 class FileLogger;
+class ThreadPool;
 
 class VideoImagesHandler
 {
@@ -26,6 +27,7 @@ private:
 	std::string m_folder;
 	int m_workers_cnt;
 	std::shared_ptr<FileLogger> m_logger;
+	std::unique_ptr<ThreadPool> _tread_pool_ptr;
 
 };
 
