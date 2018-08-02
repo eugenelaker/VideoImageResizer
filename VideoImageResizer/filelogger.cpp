@@ -12,22 +12,23 @@ std::mutex FileLogger::m_logger_mutex;
 //---------------------------------------------------------------------
 FileLogger* FileLogger::get_logger(std::string logname)
 {
-	FileLogger* sin = m_instance.load(std::memory_order_acquire);
-	if (!sin) {
+	FileLogger* log = m_instance.load(std::memory_order_acquire);
+	if (!log) {
 		std::lock_guard<std::mutex> lock(m_logger_mutex);
-		sin = m_instance.load(std::memory_order_relaxed);
-		if (!sin) {
-			sin = new FileLogger(logname);
-			m_instance.store(sin, std::memory_order_release);
+		log = m_instance.load(std::memory_order_relaxed);
+		if (!log) {
+			log = new FileLogger(logname);
+			m_instance.store(log, std::memory_order_release);
 		}
 	}
 
-	return sin;
+	return log;
 }
 
 
 FileLogger::FileLogger(std::string logname)
 {
+	m_is_stopped = false;
 	m_log_file_name = logname;
 	m_msg_loop_thread = std::thread(&FileLogger::thread_func, this);
 }
@@ -35,6 +36,11 @@ FileLogger::FileLogger(std::string logname)
 
 FileLogger::~FileLogger()
 {
+	if (m_output_log_file.is_open()) {
+		m_output_log_file.clear();
+		m_output_log_file.close();
+	}
+
 	m_is_stopped = true;
 	m_msg_loop_cv.notify_one();
 
@@ -80,10 +86,16 @@ void FileLogger::thread_func()
 {
 	while (!m_is_stopped) {
 		std::unique_lock<std::mutex> lock(m_msg_loop_mtx);
-		m_msg_loop_cv.wait(lock, [this]()
+// 		m_msg_loop_cv.wait(lock, [this]()
+// 		{
+// 			return (m_is_stopped || !m_log_queue.empty());
+// 		});
+
+		m_msg_loop_cv.wait_for(lock, std::chrono::duration<int, std::milli>(5), [this]()
 		{
-			return (m_is_stopped || !m_log_queue.empty());
+			return (m_is_stopped || !m_log_queue.empty()); 
 		});
+
 
 		while (!m_is_stopped && !m_log_queue.empty()) {
 			std::string log_msg = m_log_queue.front();
@@ -126,6 +138,7 @@ void FileLogger::write_log_msg_to_file(const std::string& message)
 	}
 	else {
 		m_output_log_file << message;
+		m_output_log_file.flush();
 	}
 }
 

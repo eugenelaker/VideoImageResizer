@@ -1,12 +1,18 @@
 #ifndef STATE_CODES_H
 #define STATE_CODES_H
 
-enum state_codes {
+enum class state_codes {
 	STATE_SUCCEDED = 1,
 	STATE_FAILER,
 	STATE_FOLDER_IS_EMPTY,
 	STATE_NO_VIDEO_FILES,
 	STATE_ERROR_CONVERTING,
+};
+
+enum class video_capture_types
+{
+	opencv,
+	ffmpeg,
 };
 
 enum class LogLevel

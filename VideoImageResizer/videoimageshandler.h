@@ -21,7 +21,6 @@ public:
 
 private:
 	std::vector<std::string> GetVideoFiles(const std::vector<std::string>& ext);
-	std::int64_t Proceed(const std::string& file_path);
 
 private:
 	std::string m_folder;

@@ -64,13 +64,18 @@
     <ClCompile Include="filelogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="threadpool.cpp" />
+    <ClCompile Include="videocaptureinterface.cpp" />
+    <ClCompile Include="videocapture_factory.cpp" />
     <ClCompile Include="videoimageshandler.cpp" />
+    <ClCompile Include="videovapture_opencv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
     <ClInclude Include="filelogger.h" />
     <ClInclude Include="threadpool.h" />
+    <ClInclude Include="videocaptureinterface.h" />
     <ClInclude Include="videoimageshandler.h" />
+    <ClInclude Include="videovapture_opencv.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

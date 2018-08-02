@@ -2,11 +2,10 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-#include <experimental/filesystem>
 #include "threadpool.h"
-#include "opencv2/opencv.hpp"
-
 #include "filelogger.h"
+#include <experimental/filesystem>
+#include "videocaptureinterface.h"
 
 
 namespace fs = std::experimental::filesystem;
@@ -56,60 +55,10 @@ std::vector<std::string> VideoImagesHandler::GetVideoFiles(const std::vector<std
 	return files;
 }
 
-std::int64_t VideoImagesHandler::Proceed(const std::string& file_path)
-{
-	LOG_DBG("VideoImagesHandler::Proceed");
-	std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
-	fs::path path(file_path);
-	cv::VideoCapture cap = cv::VideoCapture(path.string());
-	LOG_DBG("Openning video capture");
-	if (!cap.isOpened()) {
-		std::stringstream msg;
-		msg << "Video Capture not opened for file: " << file_path << "\n";
-		LOG_ERR(msg.str());
-		return -1;
-	}
-		
-
-	cv::Mat frame;
-	cv::Mat resized_frame;
-	std::uint64_t cnt = 0;
-
-	std::string filename_without_ext = path.stem().string();
-	std::string dir = path.remove_filename().append(filename_without_ext);
-	fs::create_directory(dir);
-
-	
-	while (true) {
-		try {
-			if (cap.read(frame)) {
-				cnt++;
-				cv::resize(frame, resized_frame, cv::Size(160, 160));
-				std::string new_file(dir + "//frame_" + std::to_string(cnt).append(".png"));
-							
-				cv::imwrite(new_file, resized_frame);
-			}
-			else 
-				break;
-		}
-		catch (std::runtime_error& ex) {
-			cap.release();
-			return -1;
-		}
-	}
-
-	cap.release();
-
-	std::chrono::duration<double> dur = std::chrono::steady_clock::now() - start;
-	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur);
-
-	return ms.count();
-}
-
 state_codes VideoImagesHandler::Start()
 {
 	if (m_folder.empty())
-		return STATE_FOLDER_IS_EMPTY;
+		return state_codes::STATE_FOLDER_IS_EMPTY;
 
 	int64_t total_time = 0;
 	std::vector<std::string> files = GetVideoFiles(extensions);
@@ -117,10 +66,19 @@ state_codes VideoImagesHandler::Start()
 	if (!files.empty() && _tread_pool_ptr) {
 		int64_t result;
 		std::vector<std::future<int64_t>> tasks_vec;
-		for (const std::string& f : files) {		
-			tasks_vec.push_back(_tread_pool_ptr->AddTask([&](std::string f) -> int64_t {
-				return Proceed(f);
-			}, f));
+		std::vector<IVideoCapture::ptr> cature_vector;
+		for (std::size_t i = 0; i < files.size(); ++i)
+			cature_vector.push_back(create_video_capture(video_capture_types::opencv));
+		int i = 0;
+		for (const std::string& f : files) {
+			
+			if (cature_vector[i]) {
+				cature_vector[i]->Init(f);
+				tasks_vec.push_back(_tread_pool_ptr->AddTask([i,cature_vector](std::string f) -> int64_t {
+					return cature_vector[i]->Procced();
+				}, f));
+			}
+			i++;
 		}
 
 		for (auto& tsk : tasks_vec)	{
@@ -133,6 +91,11 @@ state_codes VideoImagesHandler::Start()
 			}
 		}
 
+		for (IVideoCapture::ptr cap : cature_vector) {
+			cap = nullptr;
+		}
+		cature_vector.clear();
+
 		if (total_time) {
 			std::stringstream msg;
 			msg << "All workers total time to execute: " << total_time << " ms." << std::endl;
@@ -140,9 +103,9 @@ state_codes VideoImagesHandler::Start()
 		}
 	}
 	else
-		return STATE_NO_VIDEO_FILES;
+		return state_codes::STATE_NO_VIDEO_FILES;
 
-	return STATE_SUCCEDED;
+	return state_codes::STATE_SUCCEDED;
 }
 
 
