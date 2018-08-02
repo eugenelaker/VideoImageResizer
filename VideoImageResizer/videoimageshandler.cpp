@@ -6,6 +6,8 @@
 #include "threadpool.h"
 #include "opencv2/opencv.hpp"
 
+#include "filelogger.h"
+
 
 namespace fs = std::experimental::filesystem;
 const std::vector<std::string> extensions = { ".avi", ".mp4", ".mkv", ".flv" };
@@ -26,6 +28,11 @@ void VideoImagesHandler::Init(std::string folder, int workers_cnt)
 {
 	m_folder = folder;
 	ThreadPool::getInstance(workers_cnt);
+}
+
+void VideoImagesHandler::SetLogger(std::shared_ptr<FileLogger> logger)
+{
+	m_logger = logger;
 }
 
 
@@ -50,9 +57,14 @@ std::int64_t VideoImagesHandler::Proceed(const std::string& file_path)
 	std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
 	fs::path path(file_path);
 	cv::VideoCapture cap = cv::VideoCapture(path.string());
-
-	if (!cap.isOpened())
+	LOG_DBG("Openning video capture;");
+	if (!cap.isOpened()) {
+		std::stringstream msg;
+		msg << "Video Capture not opened for file: " << file_path << "\n";
+		LOG_ERR(msg.str());
 		return -1;
+	}
+		
 
 	cv::Mat frame;
 	cv::Mat resized_frame;
@@ -85,14 +97,16 @@ std::int64_t VideoImagesHandler::Proceed(const std::string& file_path)
 
 	std::chrono::duration<double> dur = std::chrono::steady_clock::now() - start;
 	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur);
+
 	return ms.count();
 }
 
-state_codes VideoImagesHandler::run()
+state_codes VideoImagesHandler::Start()
 {
 	if (m_folder.empty())
 		return STATE_FOLDER_IS_EMPTY;
 
+	int64_t total_time = 0;;
 	ThreadPool* tpool = ThreadPool::getInstance();
 	std::vector<std::string> files = GetVideoFiles(extensions);
 
@@ -108,8 +122,17 @@ state_codes VideoImagesHandler::run()
 		for (auto& tsk : tasks_vec)	{
 			result = tsk.get();
 			if (result != -1) {
-				std::cout << "Worker time to execute: " << result << std::endl;
+				total_time += result;
+				std::stringstream msg;
+				msg << "Worker time to execute: " << result << " ms." << std::endl;
+				LOG_DBG(msg.str());
 			}
+		}
+
+		if (total_time) {
+			std::stringstream msg;
+			msg << "All workers total time to execute: " << total_time << " ms." << std::endl;
+			LOG_DBG(msg.str());
 		}
 	}
 	else
@@ -117,3 +140,5 @@ state_codes VideoImagesHandler::run()
 
 	return STATE_SUCCEDED;
 }
+
+

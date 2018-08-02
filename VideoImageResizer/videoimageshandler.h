@@ -6,6 +6,7 @@
 #include <vector>
 #include "defines.h"
 
+class FileLogger;
 
 class VideoImagesHandler
 {
@@ -14,7 +15,8 @@ public:
 	~VideoImagesHandler();
 
 	void Init(std::string folder, int workers_cnt);
-	state_codes run();
+	state_codes Start();
+	void SetLogger(std::shared_ptr<FileLogger> logger);
 
 private:
 	std::vector<std::string> GetVideoFiles(const std::vector<std::string>& ext);
@@ -23,6 +25,7 @@ private:
 private:
 	std::string m_folder;
 	int m_workers_cnt;
+	std::shared_ptr<FileLogger> m_logger;
 
 };
 

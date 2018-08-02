@@ -5,6 +5,7 @@
 #include <string>
 
 #include "videoimageshandler.h"
+#include "filelogger.h"
 
 #if defined(__cplusplus) && (__cplusplus == 201103L) //c++11
 	template<typename T, typename... Args>
@@ -48,10 +49,11 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	std::shared_ptr<FileLogger> logger = std::make_shared<FileLogger>("VideoImageResizerLog");
 	std::unique_ptr<VideoImagesHandler> handler = std::make_unique<VideoImagesHandler>();
 	if (handler) {
 		handler->Init(folder_name, worker_cnt);
-		switch (handler->run()) {
+		switch (handler->Start()) {
 		case STATE_SUCCEDED:
 			exit(EXIT_SUCCESS);
 		case STATE_FAILER:

@@ -61,12 +61,14 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ClCompile Include="filelogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="threadpool.cpp" />
     <ClCompile Include="videoimageshandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
+    <ClInclude Include="filelogger.h" />
     <ClInclude Include="threadpool.h" />
     <ClInclude Include="videoimageshandler.h" />
   </ItemGroup>
