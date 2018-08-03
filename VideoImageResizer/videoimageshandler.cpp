@@ -57,6 +57,7 @@ std::vector<std::string> VideoImagesHandler::GetVideoFiles(const std::vector<std
 
 state_codes VideoImagesHandler::Start()
 {
+	LOG_DBG("VideoImagesHandler::Start");
 	if (m_folder.empty())
 		return state_codes::STATE_FOLDER_IS_EMPTY;
 
@@ -75,7 +76,7 @@ state_codes VideoImagesHandler::Start()
 			if (cature_vector[i]) {
 				cature_vector[i]->Init(f);
 				tasks_vec.push_back(_tread_pool_ptr->AddTask([i,cature_vector](std::string f) -> int64_t {
-					return cature_vector[i]->Procced();
+					return cature_vector[i]->Proceed();
 				}, f));
 			}
 			i++;
@@ -86,7 +87,7 @@ state_codes VideoImagesHandler::Start()
 			if (result != -1) {
 				total_time += result;
 				std::stringstream msg;
-				msg << "Worker time to execute: " << result << " ms." << std::endl;
+				msg << "Worker time to execute: " << result << " ms.";
 				LOG_DBG(msg.str());
 			}
 		}
@@ -98,7 +99,7 @@ state_codes VideoImagesHandler::Start()
 
 		if (total_time) {
 			std::stringstream msg;
-			msg << "All workers total time to execute: " << total_time << " ms." << std::endl;
+			msg << "All workers total time to execute: " << total_time << " ms.";
 			LOG_DBG(msg.str());
 		}
 	}

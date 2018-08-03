@@ -21,16 +21,18 @@ void VideoCapture_opencv::Init(std::string filename)
 	m_filename = filename;
 }
 
-int64_t VideoCapture_opencv::Procced()
+int64_t VideoCapture_opencv::Proceed()
 {
-	LOG_DBG("VideoImagesHandler::Proceed");
+	std::stringstream msg;
+	msg << "VideoImagesHandler::Proceed  thread " << std::this_thread::get_id();
+	LOG_DBG(msg.str());
 	std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
 	fs::path path(m_filename);
 	cv::VideoCapture cap = cv::VideoCapture(path.string());
-	LOG_DBG("Openning video capture");
+	msg << "Opening video capture for thread: " << std::this_thread::get_id();
+	LOG_DBG("Openning video capture for thread");
 	if (!cap.isOpened()) {
-		std::stringstream msg;
-		msg << "Video Capture not opened for file: " << m_filename << "\n";
+		msg << "Video Capture not opened for file: " << m_filename << " in thread: " << std::this_thread::get_id();
 		LOG_ERR(msg.str());
 		return -1;
 	}

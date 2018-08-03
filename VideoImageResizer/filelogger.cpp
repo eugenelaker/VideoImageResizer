@@ -36,8 +36,11 @@ FileLogger::FileLogger(std::string logname)
 
 FileLogger::~FileLogger()
 {
+	while (!m_log_queue.empty()) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
 	if (m_output_log_file.is_open()) {
-		m_output_log_file.clear();
 		m_output_log_file.close();
 	}
 
@@ -86,15 +89,15 @@ void FileLogger::thread_func()
 {
 	while (!m_is_stopped) {
 		std::unique_lock<std::mutex> lock(m_msg_loop_mtx);
-// 		m_msg_loop_cv.wait(lock, [this]()
-// 		{
-// 			return (m_is_stopped || !m_log_queue.empty());
-// 		});
-
-		m_msg_loop_cv.wait_for(lock, std::chrono::duration<int, std::milli>(5), [this]()
+		m_msg_loop_cv.wait(lock, [this]()
 		{
-			return (m_is_stopped || !m_log_queue.empty()); 
+			return (m_is_stopped || !m_log_queue.empty());
 		});
+
+// 		m_msg_loop_cv.wait_for(lock, std::chrono::duration<int, std::milli>(5), [this]()
+// 		{
+// 			return (m_is_stopped || !m_log_queue.empty()); 
+// 		});
 
 
 		while (!m_is_stopped && !m_log_queue.empty()) {
@@ -154,12 +157,12 @@ void FileLogger::add_log_msg_to_queue(const std::string& message)
 
 void FileLogger::log_fatal(const std::string& message)
 {
-	add_log_msg_to_queue("[FATAL  ] " + message);
+	add_log_msg_to_queue("[FATAL] " + message);
 }
 
 void FileLogger::log_error(const std::string& message)
 {
-	add_log_msg_to_queue("[ERROR  ] " + message);
+	add_log_msg_to_queue("[ERROR] " + message);
 }
 
 void FileLogger::log_warning(const std::string& message)
@@ -169,15 +172,15 @@ void FileLogger::log_warning(const std::string& message)
 
 void FileLogger::log_info(const std::string& message)
 {
-	add_log_msg_to_queue("[INFO   ] " + message);
+	add_log_msg_to_queue("[INFO] " + message);
 }
 
 void FileLogger::log_trace(const std::string& message)
 {
-	add_log_msg_to_queue("[TRACE  ] " + message);
+	add_log_msg_to_queue("[TRACE] " + message);
 }
 
 void FileLogger::log_debug(const std::string& message)
 {
-	add_log_msg_to_queue("[DEBUG  ] " + message);
+	add_log_msg_to_queue("[DEBUG] " + message);
 }

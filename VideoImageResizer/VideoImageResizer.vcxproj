@@ -85,6 +85,14 @@
       <LibraryDependencies>pthread;stdc++fs;opencv_core;opencv_videoio;opencv_imgcodecs;opencv_imgproc</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <CppLanguageStandard>c++14</CppLanguageStandard>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies>pthread;stdc++fs;opencv_core;opencv_videoio;opencv_imgcodecs;opencv_imgproc</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

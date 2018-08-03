@@ -14,7 +14,7 @@ public:
 	virtual ~IVideoCapture() {}
 	
 	virtual void Init(std::string filename) = 0;
-	virtual int64_t Procced() = 0;
+	virtual int64_t Proceed() = 0;
 
 protected:
 	std::string m_filename;

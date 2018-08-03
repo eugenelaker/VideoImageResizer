@@ -9,7 +9,7 @@ public:
 	virtual ~VideoCapture_opencv();
 
 	//IVideoCapture
-	virtual int64_t Procced();
+	virtual int64_t Proceed();
 	virtual void Init(std::string filename);
 };
 
