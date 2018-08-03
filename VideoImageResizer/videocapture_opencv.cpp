@@ -1,4 +1,4 @@
-#include "videovapture_opencv.h"
+#include "videocapture_opencv.h"
 #include "filelogger.h"
 #include <experimental/filesystem>
 #include "opencv2/opencv.hpp"

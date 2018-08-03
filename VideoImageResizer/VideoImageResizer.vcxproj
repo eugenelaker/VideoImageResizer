@@ -67,7 +67,7 @@
     <ClCompile Include="videocaptureinterface.cpp" />
     <ClCompile Include="videocapture_factory.cpp" />
     <ClCompile Include="videoimageshandler.cpp" />
-    <ClCompile Include="videovapture_opencv.cpp" />
+    <ClCompile Include="videocapture_opencv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h" />
@@ -75,7 +75,7 @@
     <ClInclude Include="threadpool.h" />
     <ClInclude Include="videocaptureinterface.h" />
     <ClInclude Include="videoimageshandler.h" />
-    <ClInclude Include="videovapture_opencv.h" />
+    <ClInclude Include="videocapture_opencv.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
