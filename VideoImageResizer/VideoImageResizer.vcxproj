@@ -77,6 +77,9 @@
     <ClInclude Include="videoimageshandler.h" />
     <ClInclude Include="videovapture_opencv.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <CppLanguageStandard>c++14</CppLanguageStandard>
