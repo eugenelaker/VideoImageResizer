@@ -1,7 +1,7 @@
 					***********************************************
-					*											  *
-					*            Video Image Resizer              *
-					*											  *
+					***											***
+					***          Video Image Resizer            ***
+					***											***
 					***********************************************
 
 NAME: 
@@ -26,7 +26,7 @@ BUILD:
 		1.	Explanation how to download, build and install is here: 
 			https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 		
-		2.	Run from project derectory:
+		2.	After opencv library installed run from project derectory:
 							cmake .
 							make
 		
