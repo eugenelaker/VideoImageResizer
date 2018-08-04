@@ -65,8 +65,8 @@ int64_t VideoCapture_opencv::Proceed()
 			if (cap.read(frame)) {
 				cnt++;
 				//resize frame
-				cv::resize(frame, resized_frame, cv::Size(160, 160));
-				std::string new_file(dir + "//frame_" + std::to_string(cnt).append(".png"));
+				cv::resize(frame, resized_frame, cv::Size(RESIZE_X, RESIZE_Y));
+				std::string new_file(dir + "//frame_" + std::to_string(cnt).append(IMAGE_FORMAT));
 				//write to disk
 				cv::imwrite(new_file, resized_frame);
 			}

@@ -9,7 +9,7 @@
 
 
 namespace fs = std::experimental::filesystem;
-const std::vector<std::string> extensions = { ".avi", ".mp4", ".mkv", ".flv" };
+
 
 VideoImagesHandler::VideoImagesHandler()
 	: m_folder(""),

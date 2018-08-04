@@ -1,5 +1,13 @@
-#ifndef STATE_CODES_H
-#define STATE_CODES_H
+#ifndef DEFINES_H
+#define DEFINES_H
+#include <vector>
+
+const std::vector<std::string> extensions = { ".avi", ".xvid", ".mp4", ".mkv", ".flv", ".wmv", ".mov" };
+
+#define RESIZE_X 160
+#define RESIZE_Y 160
+
+#define IMAGE_FORMAT  ".png"
 
 enum class state_codes {
 	STATE_SUCCEDED = 1,
@@ -26,5 +34,5 @@ enum class LogLevel
 	trace = 6
 };
 
-#endif // STATE_CODES_H
+#endif // DEFINES_H
 
