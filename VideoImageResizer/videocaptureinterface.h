@@ -17,7 +17,7 @@ public:
 	virtual int64_t Proceed() = 0;
 
 protected:
-	std::string m_filename;
+	std::string m_filepath;
 	
 };
 

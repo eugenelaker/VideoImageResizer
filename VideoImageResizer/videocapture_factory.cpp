@@ -1,7 +1,11 @@
 #include "videocaptureinterface.h"
-#include "videovapture_opencv.h"
+#include "videocapture_opencv.h"
 
 
+//---------------------------------------------------------------------
+//  factory for video capture. Choose which capturing engine to use
+//					create_video_capture
+//---------------------------------------------------------------------
 IVideoCapture::ptr create_video_capture(video_capture_types type)
 {
 	switch (type)

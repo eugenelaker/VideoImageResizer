@@ -16,23 +16,35 @@ VideoCapture_opencv::~VideoCapture_opencv()
 {
 }
 
-void VideoCapture_opencv::Init(std::string filename)
+//---------------------------------------------------------------------
+//  VideoCapture_opencv::Init
+//	input:  video file path 
+//---------------------------------------------------------------------
+void VideoCapture_opencv::Init(std::string filepath)
 {
-	m_filename = filename;
+	m_filepath = filepath;
 }
 
+//---------------------------------------------------------------------
+//  VideoCapture_opencv::Proceed
+//	used to perform capture frame, resize and write to disk 
+//---------------------------------------------------------------------
 int64_t VideoCapture_opencv::Proceed()
 {
 	std::stringstream msg;
 	msg << "VideoImagesHandler::Proceed  thread " << std::this_thread::get_id();
 	LOG_DBG(msg.str());
 	std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
-	fs::path path(m_filename);
+
+	fs::path path(m_filepath);
 	cv::VideoCapture cap = cv::VideoCapture(path.string());
+
+	msg.str("");
 	msg << "Opening video capture for thread: " << std::this_thread::get_id();
-	LOG_DBG("Openning video capture for thread");
+	LOG_DBG(msg.str());
 	if (!cap.isOpened()) {
-		msg << "Video Capture not opened for file: " << m_filename << " in thread: " << std::this_thread::get_id();
+		msg.str("");
+		msg << "Video Capture not opened for file: " << m_filepath << " in thread: " << std::this_thread::get_id();
 		LOG_ERR(msg.str());
 		return -1;
 	}
@@ -49,11 +61,13 @@ int64_t VideoCapture_opencv::Proceed()
 
 	while (true) {
 		try {
+			//read next frame
 			if (cap.read(frame)) {
 				cnt++;
+				//resize frame
 				cv::resize(frame, resized_frame, cv::Size(160, 160));
 				std::string new_file(dir + "//frame_" + std::to_string(cnt).append(".png"));
-
+				//write to disk
 				cv::imwrite(new_file, resized_frame);
 			}
 			else
@@ -70,5 +84,5 @@ int64_t VideoCapture_opencv::Proceed()
 	std::chrono::duration<double> dur = std::chrono::steady_clock::now() - start;
 	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(dur);
 
-	return ms.count();
+	return ms.count(); //return execution time
 }

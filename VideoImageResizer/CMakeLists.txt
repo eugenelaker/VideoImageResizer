@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 project( videoimgresizer )
 find_package( OpenCV REQUIRED )
-add_executable( videoimgresizer filelogger.cpp main.cpp threadpool.cpp videocapture_factory.cpp videocaptureinterface.cpp videoimageshandler.cpp videovapture_opencv.cpp )
+add_executable( videoimgresizer filelogger.cpp main.cpp threadpool.cpp videocapture_factory.cpp videocaptureinterface.cpp videoimageshandler.cpp videocapture_opencv.cpp )
 target_link_libraries( videoimgresizer -lpthread -lstdc++fs ${OpenCV_LIBS} )

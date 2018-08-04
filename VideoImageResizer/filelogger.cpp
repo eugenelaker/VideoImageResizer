@@ -94,12 +94,6 @@ void FileLogger::thread_func()
 			return (m_is_stopped || !m_log_queue.empty());
 		});
 
-// 		m_msg_loop_cv.wait_for(lock, std::chrono::duration<int, std::milli>(5), [this]()
-// 		{
-// 			return (m_is_stopped || !m_log_queue.empty()); 
-// 		});
-
-
 		while (!m_is_stopped && !m_log_queue.empty()) {
 			std::string log_msg = m_log_queue.front();
 			m_log_queue.pop_front();

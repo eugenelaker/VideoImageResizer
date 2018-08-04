@@ -8,6 +8,8 @@
 ThreadPool::ThreadPool(const std::size_t threads_cnt)
 	: m_stop(false)
 {
+
+	// find optimal concurrent threads count depends on cpu cores
 	std::size_t hw_threads = std::thread::hardware_concurrency();
 	unsigned long const num_threads = std::min(hw_threads != 0 ? hw_threads : 2, threads_cnt);
 	m_threads.reserve(num_threads);
@@ -28,6 +30,7 @@ ThreadPool::~ThreadPool()
 		m_stop = true;
 	}
 
+	// waiting for all threads finished
 	m_notifier.notify_all();
 	for (auto& thread : m_threads) {
 		if (thread.joinable())
@@ -69,7 +72,7 @@ void ThreadPool::Worker()
 			task = std::move(m_task_queue.front());
 			m_task_queue.pop();
 		}
-
+		//perform task
 		task();
 	}
 }

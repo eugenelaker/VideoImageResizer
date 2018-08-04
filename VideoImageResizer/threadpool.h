@@ -15,6 +15,10 @@ public:
 	ThreadPool(const std::size_t threads_cnt);
 	~ThreadPool();
 
+	//---------------------------------------------------------------------
+	//  ThreadPool: AddTask to queue
+	//	 input:  functor , function params
+	//---------------------------------------------------------------------
 	template < typename Function_t, typename... Args >
 	auto AddTask(Function_t&& func, Args&&... args)
 		->std::future< typename std::result_of< Function_t(Args...) >::type >

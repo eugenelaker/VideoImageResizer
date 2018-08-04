@@ -49,36 +49,36 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	std::shared_ptr<FileLogger> logger;
-	logger.reset( FileLogger::get_logger("VideoImageResizer"));
-	std::unique_ptr<VideoImagesHandler> handler = std::make_unique<VideoImagesHandler>();
-	if (handler) {
-		handler->Init(folder_name, worker_cnt);
-		switch (handler->Start()) {
-		case state_codes::STATE_SUCCEDED:
-			logger = nullptr;
-			exit(EXIT_SUCCESS);
-		case state_codes::STATE_FAILER:
-			logger = nullptr;
-			exit(EXIT_FAILURE);
-		case state_codes::STATE_FOLDER_IS_EMPTY:
-			std::cout << "folder name is empty" << std::endl;
-			logger = nullptr;
-			exit(EXIT_FAILURE);
-		case  state_codes::STATE_NO_VIDEO_FILES:
-			std::cout << "folder has not contains video files" << std::endl;
-			logger = nullptr;
-			exit(EXIT_FAILURE);
-		case state_codes::STATE_ERROR_CONVERTING:
-			std::cout << "Exception converting image to PNG format" << std::endl;
-		default:
-			std::cout << "something goes wrong" << std::endl;
-			logger = nullptr;
-			exit(EXIT_FAILURE);
+	{
+		std::shared_ptr<FileLogger> logger;
+		logger.reset(FileLogger::get_logger("VideoImageResizer"));
+		std::unique_ptr<VideoImagesHandler> handler = std::make_unique<VideoImagesHandler>();
+		if (handler) {
+			handler->Init(folder_name, worker_cnt);
+			switch (handler->Start()) {
+			case state_codes::STATE_SUCCEDED:
+				logger = nullptr;
+				exit(EXIT_SUCCESS);
+			case state_codes::STATE_FAILER:
+				logger = nullptr;
+				exit(EXIT_FAILURE);
+			case state_codes::STATE_FOLDER_IS_EMPTY:
+				std::cout << "folder name is empty" << std::endl;
+				logger = nullptr;
+				exit(EXIT_FAILURE);
+			case  state_codes::STATE_NO_VIDEO_FILES:
+				std::cout << "folder has not contains video files" << std::endl;
+				logger = nullptr;
+				exit(EXIT_FAILURE);
+			case state_codes::STATE_ERROR_CONVERTING:
+				std::cout << "Exception converting image to PNG format" << std::endl;
+			default:
+				std::cout << "something goes wrong" << std::endl;
+				logger = nullptr;
+				exit(EXIT_FAILURE);
+			}
 		}
 	}
-
-	logger = nullptr;
 	
 	return 0;
 }

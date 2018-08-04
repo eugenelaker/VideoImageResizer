@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VIDEO_CAPTURE_INTERFACE
+#define VIDEO_CAPTURE_INTERFACE
 #include "videocaptureinterface.h"
 
 
@@ -10,6 +11,9 @@ public:
 
 	//IVideoCapture
 	virtual int64_t Proceed();
-	virtual void Init(std::string filename);
+	virtual void Init(std::string filepath);
 };
+
+#endif // VIDEO_CAPTURE_INTERFACE
+
 
